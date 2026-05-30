@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="br.cinema.model.Cliente" %>
 <%
-    // Recupera o objeto do usuário que foi salvo na sessão durante o login
     Cliente usuarioLogado = (Cliente) session.getAttribute("usuarioLogado");
 %>
 <!DOCTYPE html>
@@ -15,24 +14,105 @@
 
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">Área Administrativa</span>
-            <span class="text-white">Bem-vindo(a), <%= usuarioLogado.getNome() %></span>
+            <span class="navbar-brand fw-bold mb-0 h1 text-warning">Área Administrativa</span>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-4">Operador: <%= usuarioLogado.getNome() %></span>
+                <a class="btn btn-outline-light btn-sm" href="${pageContext.request.contextPath}/logout">Sair</a>
+            </div>
         </div>
     </nav>
 
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-header">Gerenciar Salas</div>
-                    <div class="card-body">
-                        <p class="card-text">Iniciar limpeza ou manutenção.</p>
-                        <button class="btn btn-light btn-sm">Acessar</button>
-                    </div>
-                </div>
-            </div>
+        <h3 class="mb-4 text-secondary">Controle de Salas</h3>
+        
+        <div id="mensagemAlerta" class="alert d-none" role="alert"></div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="containerSalas">
             </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        carregarSalas();
+    });
+
+    function carregarSalas() {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/salas',
+            method: 'GET',
+            dataType: 'json',
+            success: function(salas) {
+                let html = '';
+                
+                if (salas.length === 0) {
+                    html = '<div class="col-12"><p class="text-muted text-center">Nenhuma sala cadastrada no banco de dados.</p></div>';
+                } else {
+                    salas.forEach(function(sala) {
+                        let statusClass = sala.disponivel ? 'border-success' : 'border-danger';
+                        let statusText = sala.disponivel ? '<span class="badge bg-success">Disponível</span>' : '<span class="badge bg-danger">Manutenção/Limpeza</span>';
+                        
+                        html += '<div class="col">' +
+                                '  <div class="card h-100 shadow-sm ' + statusClass + '">' +
+                                '    <div class="card-body text-center">' +
+                                '      <h4 class="card-title fw-bold">Sala ' + sala.numeroSala + '</h4>' +
+                                '      <p class="text-muted mb-2">Capacidade: ' + sala.capacidade + ' lugares | Tipo: ' + sala.tipoSala + '</p>' +
+                                '      <div class="mb-4">' + statusText + '</div>' +
+                                '      <div class="d-grid gap-2">';
+
+                        if (sala.disponivel) {
+                            html += '        <button class="btn btn-outline-primary btn-sm" onclick="executarAcao(' + sala.id + ', \'INICIAR_LIMPEZA\')">Iniciar Limpeza</button>' +
+                                    '        <button class="btn btn-outline-danger btn-sm" onclick="executarAcao(' + sala.id + ', \'INICIAR_MANUTENCAO\')">Iniciar Manutenção</button>';
+                        } else {
+                            html += '        <button class="btn btn-success btn-sm" onclick="executarAcao(' + sala.id + ', \'FINALIZAR_LIMPEZA\')">Finalizar Limpeza (Liberar)</button>' +
+                                    '        <button class="btn btn-warning btn-sm" onclick="executarAcao(' + sala.id + ', \'FINALIZAR_MANUTENCAO\')">Finalizar Manut. (Liberar)</button>';
+                        }
+
+                        html += '      </div>' +
+                                '    </div>' +
+                                '  </div>' +
+                                '</div>';
+                    });
+                }
+                
+                $('#containerSalas').html(html);
+            },
+            error: function() {
+                mostrarAlerta('Erro ao carregar as salas do servidor.', 'danger');
+            }
+        });
+    }
+
+    function executarAcao(salaId, acao) {
+        $.ajax({
+            url: '${pageContext.request.contextPath}/salas',
+            method: 'POST',
+            data: { salaId: salaId, acao: acao },
+            dataType: 'json',
+            success: function(resposta) {
+                if (resposta.status === 'sucesso') {
+                    mostrarAlerta('Operação registrada com sucesso!', 'success');
+                    carregarSalas();
+                }
+            },
+            error: function() {
+                mostrarAlerta('Erro ao registrar a operação. Tente novamente.', 'danger');
+            }
+        });
+    }
+
+    function mostrarAlerta(mensagem, tipo) {
+        $('#mensagemAlerta')
+            .removeClass('d-none alert-success alert-danger')
+            .addClass('alert-' + tipo)
+            .text(mensagem);
+            
+        setTimeout(function() {
+            $('#mensagemAlerta').addClass('d-none');
+        }, 3000);
+    }
+    </script>
 </body>
 </html>
