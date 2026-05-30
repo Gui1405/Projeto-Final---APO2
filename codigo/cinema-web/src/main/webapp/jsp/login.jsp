@@ -52,9 +52,9 @@
                     success: function(resposta) {
                         if(resposta.status === 'sucesso') {
                             if(resposta.perfil === 'ADMIN') {
-                                window.location.href = 'painel-admin.jsp';
+                                window.location.href = 'admin/painel-admin.jsp';
                             } else {
-                                window.location.href = 'index.jsp';
+                                window.location.href = 'painel.jsp'; // Redireciona o cliente para o novo painel
                             }
                         }
                     },

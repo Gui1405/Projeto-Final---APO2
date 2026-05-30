@@ -28,10 +28,10 @@ public class LoginServlet extends HttpServlet {
         Cliente clienteAutenticado = clienteDao.autenticar(email, senha);
         
         if (clienteAutenticado != null) {
-            // Cria a sessão e guarda o objeto do usuário
             HttpSession session = request.getSession();
             session.setAttribute("usuarioLogado", clienteAutenticado);
             
+            // Retorna o status e o perfil correspondente
             response.getWriter().write("{\"status\":\"sucesso\", \"perfil\":\"" + clienteAutenticado.getPerfil() + "\"}");
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Erro 401
