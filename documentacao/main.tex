@@ -41,6 +41,11 @@ O sistema desenvolvido visa automatizar o processo de reserva de ingressos de ci
     \item A interface deve ser estilizada com Bootstrap 5.
 \end{itemize}
 
+\section{Desafios Encontrados e Evolução Arquitetural}
+Durante o desenvolvimento, a equipe lidou com a refatoração de uma base de código legado que dependia estritamente do carregamento clássico de Views. O principal desafio foi modernizar a arquitetura do sistema para o padrão RESTful assíncrono (utilizando jQuery AJAX e Servlets retornando JSON). 
+
+Além da complexidade arquitetural, superamos obstáculos reais de infraestrutura de desenvolvimento relacionados à integração do Maven com o servidor Apache Tomcat no ambiente Eclipse WTP (Web Tools Platform). Enfrentamos e resolvemos problemas crônicos de \textit{ClassNotFoundException} causados por falhas do Eclipse em publicar dependências Maven (\texttt{Gson} e \texttt{MySQL Connector}) no diretório \texttt{WEB-INF/lib} do Tomcat, e divergências de versão dos \textit{Project Facets} em relação ao compilador Java.
+
 \section{Diagramas}
 \textit{Nota: Insira as imagens exportadas na pasta imagens/ e remova os comentários abaixo.}
 % \begin{figure}[h]
