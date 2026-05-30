@@ -23,14 +23,43 @@
     </nav>
 
     <div class="container mt-5">
-        <h3 class="mb-4 text-secondary">Controle de Salas</h3>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-secondary m-0">Controle de Salas</h3>
+            <button class="btn btn-dark" onclick="abrirModalLogs()">Ver Histórico de Serviços</button>
+        </div>
         
         <div id="mensagemAlerta" class="alert d-none" role="alert"></div>
 
         <div class="row row-cols-1 row-cols-md-3 g-4" id="containerSalas">
             </div>
     </div>
-
+	<div class="modal fade" id="modalLogs" tabindex="-1" aria-labelledby="modalLogsLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="modalLogsLabel">Histórico de Limpeza e Manutenção</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Data e Hora</th>
+                                <th>Tipo</th>
+                                <th>Sala</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaLogs">
+                            </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -112,6 +141,43 @@
         setTimeout(function() {
             $('#mensagemAlerta').addClass('d-none');
         }, 3000);
+    }
+    
+    function abrirModalLogs() {
+        carregarLogs();
+        var myModal = new bootstrap.Modal(document.getElementById('modalLogs'));
+        myModal.show();
+    }
+
+    function carregarLogs() {
+        $('#tabelaLogs').html('<tr><td colspan="4" class="text-center">Carregando histórico...</td></tr>');
+        
+        $.ajax({
+            url: '${pageContext.request.contextPath}/logs-servicos',
+            method: 'GET',
+            dataType: 'json',
+            success: function(logs) {
+                let html = '';
+                if (logs.length === 0) {
+                    html = '<tr><td colspan="4" class="text-center text-muted">Nenhum serviço registrado.</td></tr>';
+                } else {
+                    logs.forEach(function(log) {
+                        let badgeClass = (log.status === 'Concluído') ? 'bg-success' : 'bg-warning text-dark';
+                        
+                        html += '<tr>' +
+                                '  <td>' + log.dataHora + '</td>' +
+                                '  <td><span class="badge bg-secondary">' + log.tipo + '</span></td>' +
+                                '  <td>Sala ' + log.numeroSala + '</td>' +
+                                '  <td><span class="badge ' + badgeClass + '">' + log.status + '</span></td>' +
+                                '</tr>';
+                    });
+                }
+                $('#tabelaLogs').html(html);
+            },
+            error: function() {
+                $('#tabelaLogs').html('<tr><td colspan="4" class="text-center text-danger">Erro ao buscar histórico.</td></tr>');
+            }
+        });
     }
     </script>
 </body>
