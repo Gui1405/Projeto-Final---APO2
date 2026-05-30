@@ -1,0 +1,51 @@
+-- Script de Criacao DDL
+DROP DATABASE IF EXISTS cinema;
+CREATE DATABASE IF NOT EXISTS cinema;
+USE cinema;
+
+CREATE TABLE IF NOT EXISTS cliente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    telefone VARCHAR(20),
+    senha VARCHAR(255) NOT NULL,
+    cpf VARCHAR(14) UNIQUE,
+    validado BOOLEAN DEFAULT FALSE,
+    perfil ENUM('USER', 'ADMIN') DEFAULT 'USER'
+);
+
+CREATE TABLE IF NOT EXISTS filme (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    duracao INT NOT NULL,
+    genero VARCHAR(50) NOT NULL,
+    classificacao VARCHAR(10) NOT NULL,
+    sinopse TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sala (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    capacidade INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sessao (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    filme_id INT NOT NULL,
+    sala_id INT NOT NULL,
+    horario DATETIME NOT NULL,
+    valor_ingresso DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (filme_id) REFERENCES filme(id) ON DELETE CASCADE,
+    FOREIGN KEY (sala_id) REFERENCES sala(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reserva (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cliente_id INT NOT NULL,
+    sessao_id INT NOT NULL,
+    quantidade_ingressos INT NOT NULL,
+    valor_total DECIMAL(10,2) NOT NULL,
+    data_reserva DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
+    FOREIGN KEY (sessao_id) REFERENCES sessao(id) ON DELETE CASCADE
+);

@@ -1,0 +1,45 @@
+\section{Relatório de Testes de Endpoints}
+
+Foram implementados endpoints RESTful (retornando JSON) utilizando Servlets, que foram testados através do Postman e via requisições AJAX do jQuery.
+
+\subsection{Endpoint: Login}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/login}
+    \item \textbf{Método HTTP:} \texttt{POST}
+    \item \textbf{Parâmetros de Entrada (x-www-form-urlencoded):}
+    \begin{itemize}
+        \item \texttt{email} (String)
+        \item \texttt{senha} (String)
+    \end{itemize}
+    \item \textbf{Resposta Esperada (Sucesso):}
+    \begin{verbatim}
+    {
+      "status": "success",
+      "message": "Login realizado com sucesso.",
+      "redirect": "privada/dashboard.jsp"
+    }
+    \end{verbatim}
+    \item \textbf{Resposta Esperada (Erro):}
+    \begin{verbatim}
+    {
+      "status": "error",
+      "message": "Credenciais inválidas."
+    }
+    \end{verbatim}
+\end{itemize}
+
+\subsection{Endpoint: Listagem de Filmes}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/filmes}
+    \item \textbf{Método HTTP:} \texttt{GET}
+    \item \textbf{Parâmetros de Entrada:} Nenhum
+    \item \textbf{Resposta Esperada:} Array de objetos JSON contendo id, titulo, duracao, genero e classificacao.
+\end{itemize}
+
+\subsection{Endpoint: Reservar Ingresso}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/privada/reservas}
+    \item \textbf{Método HTTP:} \texttt{POST}
+    \item \textbf{Parâmetros de Entrada:} \texttt{sessaoId} (int), \texttt{quantidade} (int)
+    \item \textbf{Resposta Esperada:} Confirmação do sucesso da inserção no banco vinculada ao ID do Cliente na sessão.
+\end{itemize}

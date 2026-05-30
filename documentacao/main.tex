@@ -1,0 +1,55 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\title{\textbf{Documentação Oficial - Projeto Cinema APO2}}
+\author{Guilherme Barroso Costa e Arthur Ferreira Fernandes}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Objetivo do Sistema}
+O sistema desenvolvido visa automatizar o processo de reserva de ingressos de cinema. Oferece uma interface web moderna onde clientes podem se cadastrar, validar seu e-mail, gerenciar seus perfis e reservar ingressos para as sessões em cartaz. Possui também uma área restrita para o administrador gerenciar o catálogo de filmes.
+
+\section{Equipe e Funções}
+\begin{itemize}
+    \item \textbf{Guilherme Barroso Costa} (GU3054101): Desenvolvedor Fullstack e Banco de Dados.
+    \item \textbf{Arthur Ferreira Fernandes} (GU3055621): QA, Documentação e Arquitetura J2EE.
+\end{itemize}
+
+\section{Requisitos do Sistema}
+\subsection{Funcionais}
+\begin{itemize}
+    \item O sistema deve permitir o cadastro de usuários e envio de e-mail de validação.
+    \item O sistema deve autenticar os usuários e proteger rotas privadas.
+    \item O sistema deve permitir que clientes reservem ingressos para as sessões.
+    \item O administrador deve poder realizar um CRUD do catálogo de filmes.
+\end{itemize}
+
+\subsection{Não Funcionais}
+\begin{itemize}
+    \item O sistema deve ser desenvolvido em J2EE (Servlets e JSP).
+    \item O banco de dados utilizado será o MySQL 8.
+    \item As requisições entre Front-End e Back-End devem ser assíncronas (AJAX).
+    \item Os endpoints devem retornar unicamente o formato JSON.
+    \item A interface deve ser estilizada com Bootstrap 5.
+\end{itemize}
+
+\section{Diagramas}
+\textit{Nota: Insira as imagens exportadas na pasta imagens/ e remova os comentários abaixo.}
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{imagens/diagrama_classes.png}
+%     \caption{Diagrama de Classes}
+% \end{figure}
+
+\include{testes_endpoints}
+\include{testes_funcionalidades}
+
+\end{document}
