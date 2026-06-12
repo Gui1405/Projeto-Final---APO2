@@ -10,7 +10,7 @@ public class PoltronaDAO {
 
     public List<Poltrona> listarPorSala(Sala salaFiltro) {
         List<Poltrona> listaPoltronas = new ArrayList<>();
-        String sql = "SELECT * FROM Poltrona WHERE SalaId = ?";
+        String sql = "SELECT * FROM poltrona WHERE sala_id = ?";
 
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -20,12 +20,12 @@ public class PoltronaDAO {
 
             while (resultSet.next()) {
                 Poltrona poltrona = new Poltrona();
-                poltrona.setId(resultSet.getInt("PoltronaId"));
-                poltrona.setNumero(resultSet.getString("PoltronaNumero"));
-                poltrona.setDisponivel(resultSet.getBoolean("Disponibilidade"));
+                poltrona.setId(resultSet.getInt("id"));
+                poltrona.setNumero(resultSet.getString("numero"));
+                poltrona.setDisponivel(resultSet.getBoolean("disponivel"));
                 
                 Sala sala = new Sala();
-                sala.setId(resultSet.getInt("SalaId"));
+                sala.setId(resultSet.getInt("sala_id"));
                 poltrona.setSala(sala);
 
                 listaPoltronas.add(poltrona);
@@ -36,9 +36,8 @@ public class PoltronaDAO {
         return listaPoltronas;
     }
 
-    // Retorna o Objeto Poltrona em vez de Integer
     public Poltrona buscar(Sala sala, String numero) {
-        String sql = "SELECT PoltronaId, Disponibilidade FROM Poltrona WHERE SalaId = ? AND PoltronaNumero = ?";
+        String sql = "SELECT id, disponivel FROM poltrona WHERE sala_id = ? AND numero = ?";
         
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -49,9 +48,9 @@ public class PoltronaDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 Poltrona poltrona = new Poltrona();
-                poltrona.setId(resultSet.getInt("PoltronaId"));
+                poltrona.setId(resultSet.getInt("id"));
                 poltrona.setNumero(numero);
-                poltrona.setDisponivel(resultSet.getBoolean("Disponibilidade"));
+                poltrona.setDisponivel(resultSet.getBoolean("disponivel"));
                 poltrona.setSala(sala);
                 return poltrona;
             }
@@ -62,7 +61,7 @@ public class PoltronaDAO {
     }
 
     public void atualizarDisponibilidade(Poltrona poltrona) throws SQLException {
-        String sql = "UPDATE Poltrona SET Disponibilidade = ? WHERE PoltronaId = ?";
+        String sql = "UPDATE poltrona SET disponivel = ? WHERE id = ?";
         
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

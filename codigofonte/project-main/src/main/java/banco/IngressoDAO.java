@@ -35,7 +35,7 @@ public class IngressoDAO {
     }
 
     public Reserva buscarPorIngresso(Ingresso filtroIngresso) {
-        String sql = "SELECT IngressoId, StatusIngresso, PoltronaId FROM Ingresso WHERE IngressoId = ?";
+        String sql = "SELECT id, status, poltrona_id FROM ingresso WHERE id = ?";
         Reserva reserva = null;
 
         try (Connection connection = new DBConnection().getConnection();
@@ -46,11 +46,11 @@ public class IngressoDAO {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     Poltrona poltrona = new Poltrona();
-                    poltrona.setId(resultSet.getInt("PoltronaId"));
+                    poltrona.setId(resultSet.getInt("poltrona_id"));
 
                     reserva = new Reserva(
-                        resultSet.getInt("IngressoId"),
-                        resultSet.getString("StatusIngresso"),
+                        resultSet.getInt("id"),
+                        resultSet.getString("status"),
                         poltrona
                     );
                 }

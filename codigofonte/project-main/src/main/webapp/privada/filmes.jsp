@@ -36,24 +36,19 @@
         </div>
     </div>
 
-    <!-- Modal Reserva -->
-    <div class="modal fade" id="reservaModal" tabindex="-1" data-bs-theme="dark">
+    <!-- Modal Escolher Sessão -->
+    <div class="modal fade" id="sessaoModal" tabindex="-1" data-bs-theme="dark">
       <div class="modal-dialog">
         <div class="modal-content bg-dark text-light">
           <div class="modal-header border-secondary">
-            <h5 class="modal-title text-info">Reservar Ingresso</h5>
+            <h5 class="modal-title text-info">Escolher Sessão</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <form id="reservaForm">
-                <!-- Simulando selecao de sessao. Para o APO2, simplifiquei colocando ID 1 direto -->
-                <input type="hidden" name="sessaoId" id="modalSessaoId" value="1">
-                <div class="mb-3">
-                    <label>Quantidade de Ingressos</label>
-                    <input type="number" name="quantidade" class="form-control bg-dark text-light border-secondary" min="1" max="10" value="1" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Confirmar Reserva</button>
-            </form>
+            <p class="text-muted">Selecione uma sessão abaixo para escolher sua poltrona:</p>
+            <div id="sessoesList" class="list-group">
+                <!-- Preenchido via AJAX -->
+            </div>
           </div>
         </div>
       </div>
@@ -84,31 +79,37 @@
 
                     $('.btn-reservar').click(function(){
                         var filmeId = $(this).data('id');
-                        // Para simplificar a POC, forca a sessao de id correspondente ao filme (se existir)
-                        $('#modalSessaoId').val(filmeId); 
-                        $('#reservaModal').modal('show');
+                        $('#sessoesList').html('<p class="text-center">Carregando sessões...</p>');
+                        $('#sessaoModal').modal('show');
+                        
+                        $.ajax({
+                            url: '../api/sessoes?filmeId=' + filmeId,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(sessoes){
+                                $('#sessoesList').empty();
+                                if(sessoes.length === 0){
+                                    $('#sessoesList').html('<p class="text-center text-warning">Nenhuma sessão disponível para este filme hoje.</p>');
+                                    return;
+                                }
+                                $.each(sessoes, function(i, s){
+                                    var btn = $('<button type="button" class="list-group-item list-group-item-action bg-dark text-light border-secondary mb-2 rounded">' +
+                                        '<strong>Sala '+ s.numeroSala +'</strong> - ' + s.inicio.replace("T", " ") + 
+                                    '</button>');
+                                    
+                                    btn.click(function() {
+                                        window.location.href = "selecionar_poltrona.jsp?sessaoId=" + s.id + "&salaId=" + s.salaId;
+                                    });
+                                    
+                                    $('#sessoesList').append(btn);
+                                });
+                            },
+                            error: function() {
+                                $('#sessoesList').html('<p class="text-center text-danger">Erro ao carregar as sessões.</p>');
+                            }
+                        });
                     });
                 }
-            });
-
-            // Fazer reserva
-            $('#reservaForm').submit(function(e){
-                e.preventDefault();
-                $.ajax({
-                    url: '../api/privada/reservas',
-                    type: 'POST',
-                    data: $(this).serialize(),
-                    dataType: 'json',
-                    success: function(resp){
-                        $('#reservaModal').modal('hide');
-                        $('#alertBox').removeClass('d-none alert-danger alert-success');
-                        if(resp.status === 'success'){
-                            $('#alertBox').addClass('alert-success').text(resp.message);
-                        } else {
-                            $('#alertBox').addClass('alert-danger').text(resp.message);
-                        }
-                    }
-                });
             });
         });
     </script>

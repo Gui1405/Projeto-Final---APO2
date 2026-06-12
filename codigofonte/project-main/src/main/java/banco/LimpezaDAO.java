@@ -3,13 +3,15 @@ package banco;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Limpeza;
 import model.Sala;
 
 public class LimpezaDAO {
 
     public void registrarInicio(Limpeza limpeza) throws SQLException {
-        String sql = "{call sp_IniciarLimpeza(?)}";
+        String sql = "CALL sp_IniciarLimpeza(?)";
         
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -20,7 +22,7 @@ public class LimpezaDAO {
     }
 
     public void registrarFim(Limpeza limpeza) throws SQLException {
-        String sql = "{call sp_FinalizarLimpeza(?)}";
+        String sql = "CALL sp_FinalizarLimpeza(?)";
         
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -31,16 +33,16 @@ public class LimpezaDAO {
     }
 
     public String buscarUltimoStatus(Sala sala) {
-        String sql = "SELECT StatusLimpeza FROM Limpeza WHERE SalaId = ? ORDER BY LimpezaId DESC LIMIT 1";
-        String status = "Desconhecido";
+        String status = null;
+        String sql = "SELECT status FROM limpeza WHERE sala_id = ? ORDER BY data_limpeza DESC LIMIT 1";
 
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
              
             preparedStatement.setInt(1, sala.getId());
-            try (var resultSet = preparedStatement.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    status = resultSet.getString("StatusLimpeza");
+                    status = resultSet.getString("status");
                 }
             }
         } catch (SQLException exception) {
@@ -49,25 +51,29 @@ public class LimpezaDAO {
         return status;
     }
 
-    public String buscarHistorico(Sala sala) {
-        StringBuilder stringBuilder = new StringBuilder();
-        String sql = "SELECT * FROM Limpeza WHERE SalaId = ?";
+    public List<Limpeza> buscarHistoricoPorSala(Sala sala) {
+        List<Limpeza> historico = new ArrayList<>();
+        String sql = "SELECT * FROM limpeza WHERE sala_id = ? ORDER BY data_limpeza DESC";
 
         try (Connection connection = new DBConnection().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             
             preparedStatement.setInt(1, sala.getId());
-            try (var resultSet = preparedStatement.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    stringBuilder.append("Data: ").append(resultSet.getObject("DataLimpeza"))
-                      .append(" - Status: ").append(resultSet.getString("StatusLimpeza"))
-                      .append("\n");
+                    Limpeza limpeza = new Limpeza();
+                    limpeza.setId(resultSet.getInt("id"));
+                    limpeza.setData(resultSet.getTimestamp("data_limpeza").toLocalDateTime());
+                    limpeza.setStatus(resultSet.getString("status"));
+                    limpeza.setObservacao(resultSet.getString("observacao"));
+                    limpeza.setSala(sala);
+
+                    historico.add(limpeza);
                 }
             }
         } catch (SQLException exception) {
             exception.printStackTrace();
-            return "Erro ao buscar histórico.";
         }
-        return stringBuilder.length() > 0 ? stringBuilder.toString() : "Nenhum registro encontrado.";
+        return historico;
     }
 }

@@ -36,22 +36,30 @@ public class ReservaServlet extends HttpServlet {
 
         List<Map<String, Object>> reservas = new ArrayList<>();
         try (Connection connection = new DBConnection().getConnection()) {
-            String sql = "SELECT r.id, f.titulo, s.horario, r.quantidade_ingressos, r.valor_total, r.data_reserva " +
-                         "FROM reserva r " +
-                         "JOIN sessao s ON r.sessao_id = s.id " +
+            String sql = "SELECT s.id as sessao_id, f.titulo, s.horario, " +
+                         "COUNT(i.id) as quantidade_ingressos, " +
+                         "SUM(s.valor_ingresso) as valor_total, " +
+                         "MAX(i.data_compra) as data_reserva, " +
+                         "GROUP_CONCAT(p.numero ORDER BY p.numero SEPARATOR ', ') as poltronas " +
+                         "FROM ingresso i " +
+                         "JOIN sessao s ON i.sessao_id = s.id " +
                          "JOIN filme f ON s.filme_id = f.id " +
-                         "WHERE r.cliente_id = ? ORDER BY r.data_reserva DESC";
+                         "JOIN poltrona p ON i.poltrona_id = p.id " +
+                         "WHERE i.cliente_id = ? " +
+                         "GROUP BY s.id, f.titulo, s.horario " +
+                         "ORDER BY data_reserva DESC";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, usuarioLogado.getId());
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> r = new HashMap<>();
-                        r.put("id", rs.getInt("id"));
+                        r.put("id", rs.getInt("sessao_id"));
                         r.put("filme", rs.getString("titulo"));
                         r.put("horario", rs.getString("horario"));
                         r.put("quantidade", rs.getInt("quantidade_ingressos"));
                         r.put("total", rs.getDouble("valor_total"));
                         r.put("data", rs.getString("data_reserva"));
+                        r.put("poltronas", rs.getString("poltronas"));
                         reservas.add(r);
                     }
                 }

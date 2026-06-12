@@ -66,12 +66,12 @@
                             <a href="gerenciar_filmes.jsp" class="btn btn-sm btn-outline-light">Gerenciar</a>
                         </li>
                         <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
-                            Salas do Cinema
-                            <button class="btn btn-sm btn-outline-secondary" disabled>Em breve</button>
+                            Limpeza de Salas
+                            <a href="limpeza.jsp" class="btn btn-sm btn-outline-info">Gerenciar</a>
                         </li>
                         <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
-                            Sessões
-                            <button class="btn btn-sm btn-outline-secondary" disabled>Em breve</button>
+                            Manutenção de Salas
+                            <a href="manutencao.jsp" class="btn btn-sm btn-outline-warning">Gerenciar</a>
                         </li>
                     </ul>
                 </div>
