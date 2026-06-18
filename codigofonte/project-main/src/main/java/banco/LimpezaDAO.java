@@ -2,6 +2,7 @@ package banco;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class LimpezaDAO {
                 while (resultSet.next()) {
                     Limpeza limpeza = new Limpeza();
                     limpeza.setId(resultSet.getInt("id"));
-                    limpeza.setData(resultSet.getTimestamp("data_limpeza").toLocalDateTime());
+                    limpeza.setDataLimpeza(resultSet.getTimestamp("data_limpeza").toLocalDateTime());
                     limpeza.setStatus(resultSet.getString("status"));
                     limpeza.setObservacao(resultSet.getString("observacao"));
                     limpeza.setSala(sala);

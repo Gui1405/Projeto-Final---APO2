@@ -245,12 +245,14 @@ END $$
 -- 2. Finalizar Limpeza: Libera a Sala
 CREATE PROCEDURE sp_FinalizarLimpeza(IN p_SalaId INT)
 BEGIN
-    -- Libera a sala para vendas
-    UPDATE Sala SET Disponivel = 1 WHERE SalaId = p_SalaId;
-
     -- Atualiza o registro que estava em andamento
     UPDATE Limpeza SET StatusLimpeza = 'Concluído' 
     WHERE SalaId = p_SalaId AND StatusLimpeza = 'EM ANDAMENTO';
+
+    -- Libera a sala para vendas se não houver manutenção
+    IF NOT EXISTS (SELECT 1 FROM Manutencao WHERE SalaId = p_SalaId AND StatusManutencao = 'EM ANDAMENTO') THEN
+        UPDATE Sala SET Disponivel = 1 WHERE SalaId = p_SalaId;
+    END IF;
 END $$
 
 -- 3. Iniciar Manutenção: Bloqueia a Sala
@@ -265,10 +267,13 @@ END $$
 -- 4. Finalizar Manutenção: Libera a Sala
 CREATE PROCEDURE sp_FinalizarManutencao(IN p_SalaId INT)
 BEGIN
-    UPDATE Sala SET Disponivel = 1 WHERE SalaId = p_SalaId;
-
     UPDATE Manutencao SET StatusManutencao = 'Concluído' 
     WHERE SalaId = p_SalaId AND StatusManutencao = 'EM ANDAMENTO';
+
+    -- Libera a sala para vendas se não houver limpeza
+    IF NOT EXISTS (SELECT 1 FROM Limpeza WHERE SalaId = p_SalaId AND StatusLimpeza = 'EM ANDAMENTO') THEN
+        UPDATE Sala SET Disponivel = 1 WHERE SalaId = p_SalaId;
+    END IF;
 END $$
 
 DELIMITER ;

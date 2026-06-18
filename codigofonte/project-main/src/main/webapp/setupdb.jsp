@@ -32,13 +32,13 @@
         stmt.execute("CREATE PROCEDURE sp_IniciarLimpeza(IN p_SalaId INT) BEGIN UPDATE sala SET disponivel = 0 WHERE id = p_SalaId; INSERT INTO limpeza (data_limpeza, status, sala_id) VALUES (NOW(), 'EM ANDAMENTO', p_SalaId); END");
 
         stmt.execute("DROP PROCEDURE IF EXISTS sp_FinalizarLimpeza");
-        stmt.execute("CREATE PROCEDURE sp_FinalizarLimpeza(IN p_SalaId INT) BEGIN UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; UPDATE limpeza SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; END");
+        stmt.execute("CREATE PROCEDURE sp_FinalizarLimpeza(IN p_SalaId INT) BEGIN UPDATE limpeza SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; IF NOT EXISTS (SELECT 1 FROM manutencao WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO') THEN UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; END IF; END");
 
         stmt.execute("DROP PROCEDURE IF EXISTS sp_IniciarManutencao");
         stmt.execute("CREATE PROCEDURE sp_IniciarManutencao(IN p_SalaId INT) BEGIN UPDATE sala SET disponivel = 0 WHERE id = p_SalaId; INSERT INTO manutencao (data_manutencao, status, sala_id) VALUES (NOW(), 'EM ANDAMENTO', p_SalaId); END");
 
         stmt.execute("DROP PROCEDURE IF EXISTS sp_FinalizarManutencao");
-        stmt.execute("CREATE PROCEDURE sp_FinalizarManutencao(IN p_SalaId INT) BEGIN UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; UPDATE manutencao SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; END");
+        stmt.execute("CREATE PROCEDURE sp_FinalizarManutencao(IN p_SalaId INT) BEGIN UPDATE manutencao SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; IF NOT EXISTS (SELECT 1 FROM limpeza WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO') THEN UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; END IF; END");
         
         try {
             stmt.execute("INSERT INTO poltrona (numero, disponivel, sala_id) VALUES ('A1', 1, 1), ('A2', 1, 1), ('A3', 1, 1), ('A4', 1, 1), ('A5', 1, 1), ('B1', 1, 1), ('B2', 1, 1), ('B3', 1, 1), ('B4', 1, 1), ('B5', 1, 1), ('C1', 1, 1), ('C2', 1, 1), ('C3', 1, 1), ('C4', 1, 1), ('C5', 1, 1), ('D1', 1, 1), ('D2', 1, 1), ('D3', 1, 1), ('D4', 1, 1), ('D5', 1, 1)");

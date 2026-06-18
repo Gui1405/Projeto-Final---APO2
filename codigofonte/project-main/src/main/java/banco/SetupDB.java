@@ -99,8 +99,10 @@ public class SetupDB {
             stmt.execute("DROP PROCEDURE IF EXISTS sp_FinalizarLimpeza");
             stmt.execute("CREATE PROCEDURE sp_FinalizarLimpeza(IN p_SalaId INT) " +
                          "BEGIN " +
-                         "    UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; " +
                          "    UPDATE limpeza SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; " +
+                         "    IF NOT EXISTS (SELECT 1 FROM manutencao WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO') THEN " +
+                         "        UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; " +
+                         "    END IF; " +
                          "END");
 
             stmt.execute("DROP PROCEDURE IF EXISTS sp_IniciarManutencao");
@@ -113,8 +115,10 @@ public class SetupDB {
             stmt.execute("DROP PROCEDURE IF EXISTS sp_FinalizarManutencao");
             stmt.execute("CREATE PROCEDURE sp_FinalizarManutencao(IN p_SalaId INT) " +
                          "BEGIN " +
-                         "    UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; " +
                          "    UPDATE manutencao SET status = 'Concluído' WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO'; " +
+                         "    IF NOT EXISTS (SELECT 1 FROM limpeza WHERE sala_id = p_SalaId AND status = 'EM ANDAMENTO') THEN " +
+                         "        UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; " +
+                         "    END IF; " +
                          "END");
             
             System.out.println("Inserindo poltronas para a Sala 1...");
