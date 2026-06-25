@@ -56,7 +56,7 @@
                             let disponivelHtml = s.disponivel ? '<span class="badge bg-success">Livre para Venda</span>' : '<span class="badge bg-danger">Bloqueada</span>';
 
                             let html = '<div class="col-md-4 mb-4">' +
-                                '<div class="card card-custom ' + cardBorder + '">' +
+                                '<div class="card card-custom text-light ' + cardBorder + '">' +
                                     '<h4 class="text-info">Sala ' + s.numero + '</h4>' +
                                     '<p>Status: <strong>' + statusTexto + '</strong></p>' +
                                     '<p>' + disponivelHtml + '</p>' +

@@ -82,17 +82,18 @@
             <!-- Historico de Reservas -->
             <div class="col-md-8">
                 <div class="card-custom">
-                    <h5 class="mb-3 text-info">Minhas Reservas</h5>
+                    <h5 class="mb-3 text-info">Meus Ingressos</h5>
                     <div class="table-responsive">
                         <table class="table table-dark table-striped">
                             <thead>
                                 <tr>
-                                    <th>Data Reserva</th>
+                                    <th>Data Compra</th>
                                     <th>Filme</th>
-                                    <th>Sessão</th>
-                                    <th>Poltronas</th>
-                                    <th>Qtd</th>
-                                    <th>Total</th>
+                                    <th>Horário</th>
+                                    <th>Poltrona</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="listaReservas">
@@ -106,30 +107,54 @@
     </div>
 
     <script>
-        $(document).ready(function(){
-            // Carregar Reservas
+        function carregarIngressos() {
             $.ajax({
                 url: '../api/privada/reservas',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data){
                     var tbody = $('#listaReservas');
+                    tbody.empty();
                     if(data.length === 0){
-                        tbody.append('<tr><td colspan="6" class="text-center text-muted">Nenhuma reserva encontrada.</td></tr>');
+                        tbody.append('<tr><td colspan="7" class="text-center text-muted">Nenhum ingresso encontrado.</td></tr>');
                         return;
                     }
                     $.each(data, function(i, res){
+                        var statusBadge = res.status === 'COMPRADO' ? '<span class="badge bg-success">Comprado</span>' : '<span class="badge bg-secondary">Reembolsado</span>';
+                        var acoes = res.status === 'COMPRADO' 
+                            ? '<button class="btn btn-sm btn-outline-danger" onclick="solicitarReembolso('+res.id+')">Reembolsar</button>'
+                            : '-';
+                            
                         tbody.append('<tr>'+
                             '<td>'+ res.data +'</td>'+
                             '<td>'+ res.filme +'</td>'+
-                            '<td>'+ res.horario +'</td>'+
-                            '<td>'+ (res.poltronas || '-') +'</td>'+
-                            '<td>'+ res.quantidade +'</td>'+
-                            '<td>R$ '+ res.total.toFixed(2) +'</td>'+
+                            '<td>'+ new Date(res.horario).toLocaleString('pt-BR') +'</td>'+
+                            '<td>'+ res.poltrona +'</td>'+
+                            '<td>R$ '+ res.valor.toFixed(2) +'</td>'+
+                            '<td>'+ statusBadge +'</td>'+
+                            '<td>'+ acoes +'</td>'+
                         '</tr>');
                     });
                 }
             });
+        }
+
+        function solicitarReembolso(id) {
+            if(confirm("Tem certeza que deseja cancelar este ingresso e solicitar reembolso? A poltrona será liberada.")) {
+                $.ajax({
+                    url: '../api/privada/reservas?id=' + id,
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function(resp) {
+                        alert(resp.message);
+                        carregarIngressos();
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function(){
+            carregarIngressos();
 
             // Atualizar Perfil
             $('#perfilForm').submit(function(e){

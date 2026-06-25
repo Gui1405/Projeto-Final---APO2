@@ -34,37 +34,32 @@ public class ReservaServlet extends HttpServlet {
         Cliente usuarioLogado = (session != null) ? (Cliente) session.getAttribute("usuarioLogado") : null;
         if(usuarioLogado == null) return;
 
-        List<Map<String, Object>> reservas = new ArrayList<>();
+        List<Map<String, Object>> ingressos = new ArrayList<>();
         try (Connection connection = new DBConnection().getConnection()) {
-            String sql = "SELECT s.id as sessao_id, f.titulo, s.horario, " +
-                         "COUNT(i.id) as quantidade_ingressos, " +
-                         "SUM(s.valor_ingresso) as valor_total, " +
-                         "MAX(i.data_compra) as data_reserva, " +
-                         "GROUP_CONCAT(p.numero ORDER BY p.numero SEPARATOR ', ') as poltronas " +
+            String sql = "SELECT i.id as ingresso_id, f.titulo, s.horario, s.valor_ingresso, p.numero as poltrona, i.data_compra, i.status " +
                          "FROM ingresso i " +
                          "JOIN sessao s ON i.sessao_id = s.id " +
                          "JOIN filme f ON s.filme_id = f.id " +
                          "JOIN poltrona p ON i.poltrona_id = p.id " +
                          "WHERE i.cliente_id = ? " +
-                         "GROUP BY s.id, f.titulo, s.horario " +
-                         "ORDER BY data_reserva DESC";
+                         "ORDER BY i.data_compra DESC";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setInt(1, usuarioLogado.getId());
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         Map<String, Object> r = new HashMap<>();
-                        r.put("id", rs.getInt("sessao_id"));
+                        r.put("id", rs.getInt("ingresso_id"));
                         r.put("filme", rs.getString("titulo"));
                         r.put("horario", rs.getString("horario"));
-                        r.put("quantidade", rs.getInt("quantidade_ingressos"));
-                        r.put("total", rs.getDouble("valor_total"));
-                        r.put("data", rs.getString("data_reserva"));
-                        r.put("poltronas", rs.getString("poltronas"));
-                        reservas.add(r);
+                        r.put("poltrona", rs.getString("poltrona"));
+                        r.put("valor", rs.getDouble("valor_ingresso"));
+                        r.put("data", rs.getString("data_compra"));
+                        r.put("status", rs.getString("status"));
+                        ingressos.add(r);
                     }
                 }
             }
-            out.print(gson.toJson(reservas));
+            out.print(gson.toJson(ingressos));
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(500);
@@ -74,7 +69,7 @@ public class ReservaServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
@@ -86,35 +81,40 @@ public class ReservaServlet extends HttpServlet {
         if(usuarioLogado == null) return;
 
         try (Connection connection = new DBConnection().getConnection()) {
-            int sessaoId = Integer.parseInt(request.getParameter("sessaoId"));
-            int quantidade = Integer.parseInt(request.getParameter("quantidade"));
-            
-            // Busca valor do ingresso na sessao
-            double valorIngresso = 0;
-            String sqlSessao = "SELECT valor_ingresso FROM sessao WHERE id = ?";
-            try(PreparedStatement stmtSessao = connection.prepareStatement(sqlSessao)) {
-                stmtSessao.setInt(1, sessaoId);
-                try(ResultSet rs = stmtSessao.executeQuery()) {
-                    if(rs.next()) valorIngresso = rs.getDouble("valor_ingresso");
+            int ingressoId = Integer.parseInt(request.getParameter("id"));
+
+            // Check if ticket belongs to user
+            boolean isOwner = false;
+            String checkSql = "SELECT id FROM ingresso WHERE id = ? AND cliente_id = ?";
+            try (PreparedStatement checkStmt = connection.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, ingressoId);
+                checkStmt.setInt(2, usuarioLogado.getId());
+                try(ResultSet rs = checkStmt.executeQuery()) {
+                    if(rs.next()) isOwner = true;
                 }
             }
-            
-            double total = valorIngresso * quantidade;
 
-            String sql = "INSERT INTO reserva (cliente_id, sessao_id, quantidade_ingressos, valor_total) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setInt(1, usuarioLogado.getId());
-                stmt.setInt(2, sessaoId);
-                stmt.setInt(3, quantidade);
-                stmt.setDouble(4, total);
+            if(!isOwner) {
+                jsonResponse.put("status", "error");
+                jsonResponse.put("message", "Acesso negado ou ingresso não existe.");
+                out.print(gson.toJson(jsonResponse));
+                out.flush();
+                return;
+            }
+
+            String sql = "{call sp_CancelarReserva(?, ?)}";
+            try (java.sql.CallableStatement callableStatement = connection.prepareCall(sql)) {
+                callableStatement.setInt(1, ingressoId);
+                callableStatement.registerOutParameter(2, java.sql.Types.VARCHAR);
+                callableStatement.execute();
+                String result = callableStatement.getString(2);
                 
-                int affected = stmt.executeUpdate();
-                if (affected > 0) {
+                if ("Sucesso".equals(result)) {
                     jsonResponse.put("status", "success");
-                    jsonResponse.put("message", "Reserva efetuada com sucesso!");
+                    jsonResponse.put("message", "Ingresso cancelado e valor reembolsado com sucesso!");
                 } else {
                     jsonResponse.put("status", "error");
-                    jsonResponse.put("message", "Erro ao efetuar reserva.");
+                    jsonResponse.put("message", result);
                 }
             }
         } catch (Exception e) {

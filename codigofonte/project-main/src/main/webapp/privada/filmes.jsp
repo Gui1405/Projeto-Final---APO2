@@ -67,7 +67,7 @@
                     $.each(data, function(i, f){
                         grid.append(
                             '<div class="col-md-4 mb-4">'+
-                                '<div class="card movie-card p-3">'+
+                                '<div class="card movie-card p-3 text-light">'+
                                     '<h4 class="text-info">'+ f.nome +'</h4>'+
                                     '<p class="small text-muted">'+ f.genero +' | '+ f.duracao +' min | '+ f.classificacao +'</p>'+
                                     '<p>'+ f.sinopse +'</p>'+

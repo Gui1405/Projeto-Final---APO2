@@ -120,14 +120,52 @@ public class SetupDB {
                          "        UPDATE sala SET disponivel = 1 WHERE id = p_SalaId; " +
                          "    END IF; " +
                          "END");
+
+            stmt.execute("DROP PROCEDURE IF EXISTS sp_CancelarReserva");
+            stmt.execute("CREATE PROCEDURE sp_CancelarReserva(IN p_IngressoId INT, OUT p_Mensagem VARCHAR(100)) " +
+                         "BEGIN " +
+                         "    DECLARE v_Status VARCHAR(100); " +
+                         "    DECLARE v_PoltronaId INT; " +
+                         "    START TRANSACTION; " +
+                         "    SELECT status, poltrona_id INTO v_Status, v_PoltronaId FROM ingresso WHERE id = p_IngressoId FOR UPDATE; " +
+                         "    IF v_Status IS NULL THEN " +
+                         "        SET p_Mensagem = 'Ingresso não encontrado'; " +
+                         "        ROLLBACK; " +
+                         "    ELSEIF v_Status = 'REEMBOLSADO' THEN " +
+                         "        SET p_Mensagem = 'Ingresso já estava reembolsado'; " +
+                         "        ROLLBACK; " +
+                         "    ELSE " +
+                         "        UPDATE ingresso SET status = 'REEMBOLSADO' WHERE id = p_IngressoId; " +
+                         "        UPDATE poltrona SET disponivel = 1 WHERE id = v_PoltronaId; " +
+                         "        SET p_Mensagem = 'Sucesso'; " +
+                         "        COMMIT; " +
+                         "    END IF; " +
+                         "END");
             
-            System.out.println("Inserindo poltronas para a Sala 1...");
+            System.out.println("Inserindo dados iniciais (Sala, Filme, Sessao)...");
+            try {
+                stmt.execute("INSERT INTO sala (id, nome, capacidade, disponivel) VALUES (1, 'Sala 1 - IMAX', 20, 1), (2, 'Sala 2 - VIP', 20, 1), (3, 'Sala 3 - Standard', 20, 1) ON DUPLICATE KEY UPDATE nome=VALUES(nome), capacidade=VALUES(capacidade), disponivel=VALUES(disponivel)");
+                stmt.execute("INSERT INTO filme (id, titulo, duracao, genero, classificacao, sinopse) VALUES (1, 'Matrix (Remastered)', 136, 'Ficção Científica', '14 anos', 'Um programador descobre que o mundo em que vive é uma simulação criada por máquinas e se junta à resistência.'), (2, 'O Auto da Compadecida 2', 120, 'Comédia', '12 anos', 'João Grilo e Chicó retornam para novas aventuras no sertão de Taperoá, cheios de histórias e confusões.'), (3, 'Coringa: Delírio a Dois', 138, 'Drama / Musical', '16 anos', 'Arthur Fleck encontra o amor verdadeiro em Arkham e a música que sempre esteve dentro dele.') ON DUPLICATE KEY UPDATE titulo=VALUES(titulo), duracao=VALUES(duracao), genero=VALUES(genero), classificacao=VALUES(classificacao), sinopse=VALUES(sinopse)");
+                stmt.execute("INSERT INTO sessao (id, filme_id, sala_id, horario, valor_ingresso) VALUES (1, 1, 1, DATE_ADD(NOW(), INTERVAL 2 HOUR), 45.00), (2, 2, 3, DATE_ADD(NOW(), INTERVAL 4 HOUR), 25.00), (3, 3, 2, DATE_ADD(NOW(), INTERVAL 5 HOUR), 60.00) ON DUPLICATE KEY UPDATE filme_id=VALUES(filme_id), sala_id=VALUES(sala_id), horario=VALUES(horario), valor_ingresso=VALUES(valor_ingresso)");
+            } catch(Exception e) {
+                System.out.println("Dados iniciais ja inseridos ou erro: " + e.getMessage());
+            }
+
+            System.out.println("Inserindo poltronas para as Salas...");
             try {
                 stmt.execute("INSERT INTO poltrona (numero, disponivel, sala_id) VALUES " +
                              "('A1', 1, 1), ('A2', 1, 1), ('A3', 1, 1), ('A4', 1, 1), ('A5', 1, 1), " +
                              "('B1', 1, 1), ('B2', 1, 1), ('B3', 1, 1), ('B4', 1, 1), ('B5', 1, 1), " +
                              "('C1', 1, 1), ('C2', 1, 1), ('C3', 1, 1), ('C4', 1, 1), ('C5', 1, 1), " +
-                             "('D1', 1, 1), ('D2', 1, 1), ('D3', 1, 1), ('D4', 1, 1), ('D5', 1, 1)");
+                             "('D1', 1, 1), ('D2', 1, 1), ('D3', 1, 1), ('D4', 1, 1), ('D5', 1, 1), " +
+                             "('A1', 1, 2), ('A2', 1, 2), ('A3', 1, 2), ('A4', 1, 2), ('A5', 1, 2), " +
+                             "('B1', 1, 2), ('B2', 1, 2), ('B3', 1, 2), ('B4', 1, 2), ('B5', 1, 2), " +
+                             "('C1', 1, 2), ('C2', 1, 2), ('C3', 1, 2), ('C4', 1, 2), ('C5', 1, 2), " +
+                             "('D1', 1, 2), ('D2', 1, 2), ('D3', 1, 2), ('D4', 1, 2), ('D5', 1, 2), " +
+                             "('A1', 1, 3), ('A2', 1, 3), ('A3', 1, 3), ('A4', 1, 3), ('A5', 1, 3), " +
+                             "('B1', 1, 3), ('B2', 1, 3), ('B3', 1, 3), ('B4', 1, 3), ('B5', 1, 3), " +
+                             "('C1', 1, 3), ('C2', 1, 3), ('C3', 1, 3), ('C4', 1, 3), ('C5', 1, 3), " +
+                             "('D1', 1, 3), ('D2', 1, 3), ('D3', 1, 3), ('D4', 1, 3), ('D5', 1, 3)");
             } catch(Exception e) {
                 System.out.println("Poltronas ja inseridas ou erro: " + e.getMessage());
             }

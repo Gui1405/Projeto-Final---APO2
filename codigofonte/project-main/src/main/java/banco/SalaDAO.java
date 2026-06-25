@@ -68,4 +68,36 @@ public class SalaDAO {
         }
         return salas;
     }
+
+    public boolean inserir(Sala sala) throws SQLException {
+        String sql = "INSERT INTO sala (nome, capacidade, disponivel) VALUES (?, ?, ?)";
+        try (Connection connection = new DBConnection().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "Sala " + sala.getNumero());
+            preparedStatement.setInt(2, sala.getCapacidade());
+            preparedStatement.setBoolean(3, sala.getDisponivel());
+            return preparedStatement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean atualizar(Sala sala) throws SQLException {
+        String sql = "UPDATE sala SET nome = ?, capacidade = ?, disponivel = ? WHERE id = ?";
+        try (Connection connection = new DBConnection().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "Sala " + sala.getNumero());
+            preparedStatement.setInt(2, sala.getCapacidade());
+            preparedStatement.setBoolean(3, sala.getDisponivel());
+            preparedStatement.setInt(4, sala.getId());
+            return preparedStatement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean deletar(int id) throws SQLException {
+        String sql = "DELETE FROM sala WHERE id = ?";
+        try (Connection connection = new DBConnection().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() > 0;
+        }
+    }
 }

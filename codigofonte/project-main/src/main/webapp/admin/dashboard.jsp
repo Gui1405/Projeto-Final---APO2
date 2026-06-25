@@ -44,11 +44,11 @@
                     <div id="perfilAlert" class="alert d-none"></div>
                     <form id="perfilForm">
                         <div class="mb-3">
-                            <label>Nome</label>
+                            <label class="text-light">Nome</label>
                             <input type="text" name="nome" class="form-control bg-dark text-light border-secondary" value="<%= usuario.getNome() %>" required>
                         </div>
                         <div class="mb-3">
-                            <label>Telefone</label>
+                            <label class="text-light">Telefone</label>
                             <input type="text" name="telefone" class="form-control bg-dark text-light border-secondary" value="<%= usuario.getTelefone() != null ? usuario.getTelefone() : "" %>">
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
@@ -64,6 +64,14 @@
                         <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
                             Filmes Cadastrados
                             <a href="gerenciar_filmes.jsp" class="btn btn-sm btn-outline-light">Gerenciar</a>
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
+                            Salas e Capacidade
+                            <a href="gerenciar_salas.jsp" class="btn btn-sm btn-outline-light">Gerenciar</a>
+                        </li>
+                        <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
+                            Sessões e Horários
+                            <a href="gerenciar_sessoes.jsp" class="btn btn-sm btn-outline-light">Gerenciar</a>
                         </li>
                         <li class="list-group-item bg-transparent text-light border-secondary d-flex justify-content-between align-items-center">
                             Limpeza de Salas
