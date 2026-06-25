@@ -1,16 +1,23 @@
 \section{Relatório de Testes de Funcionalidades}
 
-Esta seção detalha os testes manuais e funcionais realizados diretamente na interface do usuário (Views).
+Esta seção detalha os testes manuais e funcionais executados na interface do usuário (Views e JSPs), validando as regras de negócio, restrições de acesso e usabilidade premium.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|p{3cm}|p{5cm}|p{4cm}|p{3cm}|}
+\small
+\begin{tabular}{|p{3.5cm}|p{4.5cm}|p{4.5cm}|p{2.5cm}|}
 \hline
 \textbf{Caso de Uso} & \textbf{Passo a Passo} & \textbf{Resultado Esperado} & \textbf{Status/Erros} \\ \hline
-1. Login Usuário Válido & 1. Acessar tela de Login.\newline 2. Inserir email teste@cinema.com\newline 3. Inserir senha teste123\newline 4. Clicar em Entrar & O sistema exibe um alerta verde e redireciona para a área privada dashboard.jsp. & OK. Nenhum erro. \\ \hline
-2. Controle de Acesso & 1. Copiar a URL da área administrativa.\newline 2. Acessar diretamente sem fazer login. & O sistema intercepta pelo AuthFilter e redireciona para a página de Login com erro de acesso. & OK. Nenhum erro. \\ \hline
-3. Cadastro de Filme (Admin) & 1. Logar como Administrador.\newline 2. Ir em Gerenciar Filmes.\newline 3. Preencher campos e Salvar. & O filme aparece na listagem AJAX imediatamente sem recarregar a página. & OK. Nenhum erro. \\ \hline
-4. Reserva de Ingresso (User) & 1. Logar como Cliente.\newline 2. Acessar 'Ver Filmes'.\newline 3. Clicar em Comprar em um filme.\newline 4. Confirmar quantidade. & O sistema salva no banco a reserva atrelada ao Cliente logado. & OK. Nenhum erro. \\ \hline
+1. Login Usuário Válido & 1. Acessar tela de Login.\newline 2. Inserir email teste@cinema.com e senha.\newline 3. Clicar em Entrar & O sistema exibe alerta de sucesso e redireciona para dashboard.jsp. & OK. Nenhum erro. \\ \hline
+2. Controle de Acesso (Auth) & 1. Copiar URL de um JSP da área /admin.\newline 2. Acessar sem realizar login. & O sistema intercepta via AuthFilter e redireciona para login.jsp. & OK. Nenhum erro. \\ \hline
+3. Cadastro de Filme com Sessão Simbólica & 1. No painel Admin, ir em Gerenciar Filmes.\newline 2. Preencher dados do filme e escolher Sala, Horário e Valor na mesma tela. & O filme e a sessão são criados simultaneamente e listados via AJAX sem refresh. & OK. Nenhum erro. \\ \hline
+4. Filtro de Catálogo (Cliente vs Admin) & 1. Acessar index.jsp como cliente.\newline 2. Acessar painel de Filmes como Admin. & Cliente visualiza apenas filmes com sessão ativa. Admin visualiza todo o acervo. & OK. Nenhum erro. \\ \hline
+5. Trava de Salas no Dropdown & 1. No formulário de alocação de sessão, abrir o select de Salas. & Salas bloqueadas/manutenção aparecem desabilitadas (\texttt{disabled}) com status exibido. & OK. Nenhum erro. \\ \hline
+6. Edição de Filmes (Auto-preenchimento) & 1. Em Gerenciar Filmes, clicar no botão Editar de um filme específico. & O modal abre suavemente preenchendo todos os inputs (Título, Duração, Sinopse). & OK. Nenhum erro. \\ \hline
+7. Seleção Interativa de Poltronas & 1. Escolher sessão e acessar tela de poltronas.\newline 2. Selecionar assentos livres e tentar clicar em ocupados. & Assentos livres ficam azuis e habilitam botão de compra. Ocupados ficam travados. & OK. Nenhum erro. \\ \hline
+8. Gestão de Limpeza e Manutenção & 1. Ir no painel de Limpeza ou Manutenção.\newline 2. Clicar em Iniciar / Finalizar. & O status altera em tempo real, mudando a borda do card e a trava de venda da sala. & OK. Nenhum erro. \\ \hline
+9. Contraste Visual e Glassmorphism & 1. Navegar por index.jsp, modais e painéis verificando legibilidade sobre fundo ardósia. & Textos renderizados em branco limpo (\texttt{text-light}) garantindo leitura perfeita. & OK. Nenhum erro. \\ \hline
+10. Compra de Ingresso (Fim a Fim) & 1. Confirmar poltronas selecionadas e concluir a operação. & Sistema grava a reserva no banco vinculada ao usuário e notifica sucesso. & OK. Nenhum erro. \\ \hline
 \end{tabular}
-\caption{Tabela de Testes Funcionais da Interface}
+\caption{Tabela de Testes Funcionais e de Interface}
 \end{table}

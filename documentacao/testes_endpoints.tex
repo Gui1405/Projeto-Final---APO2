@@ -1,45 +1,67 @@
 \section{Relatório de Testes de Endpoints}
 
-Foram implementados endpoints RESTful (retornando JSON) utilizando Servlets, que foram testados através do Postman e via requisições AJAX do jQuery.
+Foram implementados endpoints RESTful (retornando JSON) utilizando Servlets em conformidade com o padrão arquitetural MVC, testados através de requisições AJAX (jQuery) e ferramentas de teste de API (Postman).
 
-\subsection{Endpoint: Login}
+\subsection{Endpoint: Autenticação (Login)}
 \begin{itemize}
     \item \textbf{URL:} \texttt{/api/login}
     \item \textbf{Método HTTP:} \texttt{POST}
-    \item \textbf{Parâmetros de Entrada (x-www-form-urlencoded):}
-    \begin{itemize}
-        \item \texttt{email} (String)
-        \item \texttt{senha} (String)
-    \end{itemize}
+    \item \textbf{Parâmetros (x-www-form-urlencoded):} \texttt{email} (String), \texttt{senha} (String)
     \item \textbf{Resposta Esperada (Sucesso):}
     \begin{verbatim}
-    {
-      "status": "success",
-      "message": "Login realizado com sucesso.",
-      "redirect": "privada/dashboard.jsp"
-    }
+    { "status": "success", "message": "Login realizado com sucesso.", 
+      "redirect": "privada/dashboard.jsp" }
     \end{verbatim}
-    \item \textbf{Resposta Esperada (Erro):}
-    \begin{verbatim}
-    {
-      "status": "error",
-      "message": "Credenciais inválidas."
-    }
-    \end{verbatim}
+    \item \textbf{Resposta Esperada (Erro):} \texttt{\{ "status": "error", "message": "Credenciais inválidas." \}}
 \end{itemize}
 
-\subsection{Endpoint: Listagem de Filmes}
+\subsection{Endpoint: Cadastro de Clientes (Registro)}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/registro}
+    \item \textbf{Método HTTP:} \texttt{POST}
+    \item \textbf{Parâmetros:} \texttt{nome}, \texttt{cpf}, \texttt{telefone}, \texttt{email}, \texttt{senha}
+    \item \textbf{Resposta Esperada:} \texttt{\{ "status": "success", "message": "Cadastro realizado com sucesso!" \}}
+\end{itemize}
+
+\subsection{Endpoint: Listagem de Filmes (Cliente)}
 \begin{itemize}
     \item \textbf{URL:} \texttt{/api/filmes}
     \item \textbf{Método HTTP:} \texttt{GET}
-    \item \textbf{Parâmetros de Entrada:} Nenhum
-    \item \textbf{Resposta Esperada:} Array de objetos JSON contendo id, titulo, duracao, genero e classificacao.
+    \item \textbf{Regra de Negócio:} Retorna exclusivamente filmes que possuem sessões ativas programadas para datas futuras (\texttt{s.horario >= NOW()}).
+    \item \textbf{Resposta Esperada:} Array de objetos contendo \texttt{id, nome, duracao, genero, classificacao, sinopse}.
 \end{itemize}
 
-\subsection{Endpoint: Reservar Ingresso}
+\subsection{Endpoint: Gerenciamento de Filmes e Alocação Inicial (Admin)}
 \begin{itemize}
-    \item \textbf{URL:} \texttt{/api/privada/reservas}
-    \item \textbf{Método HTTP:} \texttt{POST}
-    \item \textbf{Parâmetros de Entrada:} \texttt{sessaoId} (int), \texttt{quantidade} (int)
-    \item \textbf{Resposta Esperada:} Confirmação do sucesso da inserção no banco vinculada ao ID do Cliente na sessão.
+    \item \textbf{URL:} \texttt{/api/admin/filmes}
+    \item \textbf{Método HTTP (GET):} Retorna o acervo completo de filmes (independentemente de possuírem sessões).
+    \item \textbf{Método HTTP (POST):} Aceita dados do filme (\texttt{titulo, duracao, genero, classificacao, sinopse}). Caso sejam enviados também \texttt{sala\_id, horario} e \texttt{valor\_ingresso}, realiza a criação automática e simultânea da Sessão no mesmo escopo transacional.
+    \item \textbf{Método HTTP (PUT/DELETE):} Atualiza ou remove filmes pelo \texttt{id}.
+\end{itemize}
+
+\subsection{Endpoint: Gerenciamento de Salas (Admin)}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/admin/salas}
+    \item \textbf{Método HTTP (GET):} Retorna as salas cadastradas com atributos de \texttt{capacidade} e flag de \texttt{disponivel}.
+    \item \textbf{Método HTTP (POST/PUT/DELETE):} CRUD completo para inserção, bloqueio ou alteração de capacidade.
+\end{itemize}
+
+\subsection{Endpoint: Gerenciamento de Sessões (Admin)}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/admin/sessoes}
+    \item \textbf{Método HTTP (GET):} Retorna as sessões com join agilizado trazendo \texttt{filmeTitulo} e identificação da sala.
+    \item \textbf{Método HTTP (POST/PUT/DELETE):} Alocação e reconfiguração de horários e valores de ingressos.
+\end{itemize}
+
+\subsection{Endpoint: Limpeza e Manutenção de Salas (Admin)}
+\begin{itemize}
+    \item \textbf{URL:} \texttt{/api/admin/limpeza} e \texttt{/api/admin/manutencao}
+    \item \textbf{Método HTTP (GET):} Retorna a listagem de salas e o estado atual (\texttt{AGUARDANDO}, \texttt{EM ANDAMENTO}, \texttt{CONCLUIDO}).
+    \item \textbf{Método HTTP (POST):} Atualiza o status e, no caso de início de manutenção, ajusta automaticamente a flag \texttt{disponivel = false} para travar vendas na sala.
+\end{itemize}
+
+\subsection{Endpoint: Mapeamento de Poltronas e Venda de Ingressos}
+\begin{itemize}
+    \item \textbf{URL Poltronas (GET):} \texttt{/api/poltronas?salaId=X} (Retorna array de assentos com flag \texttt{disponivel}).
+    \item \textbf{URL Ingressos (POST):} \texttt{/api/privada/ingressos} (Recebe JSON contendo \texttt{sessaoId} e array de \texttt{poltronas} selecionadas, registrando o vínculo ao cliente logado na sessão).
 \end{itemize}
