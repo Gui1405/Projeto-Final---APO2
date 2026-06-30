@@ -47,12 +47,16 @@ Durante o desenvolvimento, a equipe lidou com a refatoração de uma base de có
 Além da complexidade arquitetural, superamos obstáculos reais de infraestrutura de desenvolvimento relacionados à integração do Maven com o servidor Apache Tomcat no ambiente Eclipse WTP (Web Tools Platform). Enfrentamos e resolvemos problemas crônicos de \textit{ClassNotFoundException} causados por falhas do Eclipse em publicar dependências Maven (\texttt{Gson} e \texttt{MySQL Connector}) no diretório \texttt{WEB-INF/lib} do Tomcat, e divergências de versão dos \textit{Project Facets} em relação ao compilador Java.
 
 \section{Diagramas}
-\textit{Nota: Insira as imagens exportadas na pasta imagens/ e remova os comentários abaixo.}
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.8\textwidth]{imagens/diagrama_classes.png}
-%     \caption{Diagrama de Classes}
-% \end{figure}
+\subsection{Diagrama Entidade-Relacionamento (DER)}
+O Diagrama Entidade-Relacionamento abaixo ilustra a estrutura das tabelas do banco de dados MySQL, evidenciando as chaves primárias, chaves estrangeiras e a cardinalidade entre as entidades do sistema.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\textwidth]{imagens/diagrama_der.png}
+    \caption{Diagrama Entidade-Relacionamento (DER)}
+\end{figure}
+
+\textit{Nota: Os demais diagramas exigidos (Casos de Uso, Classes e Sequência), além da Modelagem de Processos AS/IS e Lista de Épicos, encontram-se no documento de modelagem anexo ao projeto.}
 
 \include{testes_endpoints}
 \include{testes_funcionalidades}
