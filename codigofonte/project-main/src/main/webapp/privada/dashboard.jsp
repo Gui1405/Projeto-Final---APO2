@@ -38,6 +38,22 @@
             border: none;
             border-radius: 50px;
         }
+        .form-control {
+            background-color: rgba(30, 41, 59, 0.9) !important;
+            color: #ffffff !important;
+            border: 1px solid #38bdf8 !important;
+        }
+        .form-control:focus {
+            background-color: rgba(15, 23, 42, 0.9) !important;
+            color: #ffffff !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25) !important;
+        }
+        .form-control:disabled, .form-control[readonly] {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #94a3b8 !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
     </style>
 </head>
 <body>
@@ -116,7 +132,7 @@
                     var tbody = $('#listaReservas');
                     tbody.empty();
                     if(data.length === 0){
-                        tbody.append('<tr><td colspan="7" class="text-center text-muted">Nenhum ingresso encontrado.</td></tr>');
+                        tbody.append('<tr><td colspan="7" class="text-center text-white">Nenhum ingresso encontrado.</td></tr>');
                         return;
                     }
                     $.each(data, function(i, res){

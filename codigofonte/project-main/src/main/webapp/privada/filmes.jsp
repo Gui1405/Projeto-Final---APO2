@@ -94,11 +94,11 @@
                                 }
                                 $.each(sessoes, function(i, s){
                                     var btn = $('<button type="button" class="list-group-item list-group-item-action bg-dark text-light border-secondary mb-2 rounded">' +
-                                        '<strong>Sala '+ s.numeroSala +'</strong> - ' + s.inicio.replace("T", " ") + 
+                                        '<strong>' + s.numeroSala + '</strong> - ' + s.horario.replace("T", " ") + 
                                     '</button>');
                                     
                                     btn.click(function() {
-                                        window.location.href = "selecionar_poltrona.jsp?sessaoId=" + s.id + "&salaId=" + s.salaId;
+                                        window.location.href = "selecionar_poltrona.jsp?sessaoId=" + s.id + "&salaId=" + s.salaId + "&salaNome=" + encodeURIComponent(s.numeroSala);
                                     });
                                     
                                     $('#sessoesList').append(btn);

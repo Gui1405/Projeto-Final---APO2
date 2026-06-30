@@ -74,6 +74,7 @@ public class PerfilServlet extends HttpServlet {
             jsonResponse.put("status", "error");
             jsonResponse.put("message", "Erro interno: " + e.getMessage());
         } finally {
+            out.print(gson.toJson(jsonResponse));
             out.flush();
         }
     }

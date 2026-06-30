@@ -84,10 +84,11 @@
                 <input type="password" class="form-control" id="senha" name="senha" required>
             </div>
             <button type="submit" class="btn btn-primary w-100 mb-3" id="btnSubmit">Entrar</button>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mb-4">
                 <a href="recuperar.jsp" class="link-custom">Esqueceu a senha?</a>
                 <a href="cadastro.jsp" class="link-custom">Criar conta</a>
             </div>
+            <a href="index.jsp" class="btn btn-outline-secondary w-100" style="border-radius: 50px;">Voltar à Home</a>
         </form>
     </div>
 

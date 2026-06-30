@@ -50,7 +50,7 @@
 
     <div class="container pb-5">
         <h2 class="text-center mb-2">Escolha seus Assentos</h2>
-        <p class="text-center text-muted mb-4">Sala <span id="salaNumero"></span></p>
+        <p class="text-center text-muted mb-4"><span id="salaNumero"></span></p>
 
         <div id="alertBox" class="alert d-none max-w-md mx-auto"></div>
 
@@ -79,11 +79,14 @@
             const urlParams = new URLSearchParams(window.location.search);
             const sessaoId = urlParams.get('sessaoId');
             const salaId = urlParams.get('salaId');
+            const salaNome = urlParams.get('salaNome');
             
             if(!sessaoId || !salaId) {
                 $('#alertBox').removeClass('d-none').addClass('alert-danger').text("Parâmetros inválidos.");
                 return;
             }
+
+            $('#salaNumero').text(salaNome || ('Sala ' + salaId));
 
             let poltronasSelecionadas = [];
 
