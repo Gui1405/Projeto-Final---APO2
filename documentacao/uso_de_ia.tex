@@ -1,0 +1,30 @@
+\section{Declaração de Uso de Inteligência Artificial}
+
+\subsection{Escopo do Trabalho Humano}
+O desenvolvimento deste sistema foi idealizado, projetado e construído primordialmente pelos integrantes da equipe. Fomos responsáveis por:
+\begin{itemize}
+    \item Definição das regras de negócio, modelagem de processos (AS/IS) e levantamento de requisitos.
+    \item Criação dos diagramas estruturais e comportamentais (Casos de Uso, Classes, Sequência e DER).
+    \item Definição da arquitetura MVC utilizando a plataforma J2EE (Jakarta EE) sobre o servidor Apache Tomcat.
+    \item Criação e estruturação inicial do banco de dados MySQL e modelagem das entidades (DDL).
+    \item Construção das views em JSP e estruturação do front-end com jQuery e Bootstrap.
+\end{itemize}
+
+\subsection{Pontos Chave de Auxílio da IA}
+A Inteligência Artificial (IA) foi utilizada estritamente como um assistente de \textit{pair-programming} e consultoria técnica para destravar problemas pontuais e acelerar tarefas repetitivas. A IA nos auxiliou especificamente nos seguintes pontos:
+\begin{itemize}
+    \item \textbf{Resolução de Concorrência no Banco de Dados:} Sugestão e refatoração de Stored Procedures utilizando bloqueios transacionais (\texttt{FOR UPDATE}) para evitar a venda duplicada da mesma poltrona.
+    \item \textbf{Integração Front-End e Back-End:} Auxílio na padronização dos Servlets para que devolvessem respostas uniformes em JSON (usando a biblioteca Gson) para serem consumidas corretamente pelo jQuery AJAX.
+    \item \textbf{Polimento de Interface (UI/UX):} Ajustes finos de CSS e classes do Bootstrap para melhorar o contraste de cores e legibilidade de tabelas dinâmicas.
+    \item \textbf{População de Dados (Mock Data):} Auxílio na geração do script DML para criar uma base robusta de testes (inserção massiva de filmes, salas, horários dinâmicos e poltronas).
+\end{itemize}
+
+\subsection{Metodologia de Verificação e Validação}
+Nenhum código sugerido pela IA foi integrado ao sistema sem passar por rigorosa validação da equipe. Adotamos o seguinte fluxo para verificar os resultados entregues pela IA:
+\begin{itemize}
+    \item \textbf{Code Review Manual:} Lemos e analisamos todas as classes, métodos e scripts SQL sugeridos para garantir que seguiam as diretrizes arquiteturais e tecnológicas exigidas pelo edital da disciplina.
+    \item \textbf{Testes Unitários de Endpoint:} Todas as refatorações de Servlets feitas com auxílio da IA foram testadas via Postman/HttpRequestTester para atestar que os payloads (entradas e saídas em JSON) estavam consistentes.
+    \item \textbf{Homologação de Interface:} Os ajustes de tela (JSP/Bootstrap) foram exaustivamente validados através de navegação real no browser, verificando responsividade, fluxos de erros (alertas) e sucesso (redirecionamentos).
+\end{itemize}
+
+Em resumo, a IA atuou como uma ferramenta de suporte técnico focada na otimização de tempo e refinamento de bugs, enquanto as decisões arquiteturais, lógicas e a validação final da plataforma permaneceram sob o total controle e execução dos alunos.
