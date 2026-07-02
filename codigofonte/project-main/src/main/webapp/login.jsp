@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -94,12 +95,14 @@
 
     <script>
         $(document).ready(function() {
+            // Intercepta a submissão do formulário para envio via AJAX, evitando o recarregamento (refresh) da página JSP
             $('#loginForm').submit(function(e) {
-                e.preventDefault(); // Evita recarregamento da pagina
+                e.preventDefault();
                 
                 var btn = $('#btnSubmit');
                 btn.prop('disabled', true).text('Aguarde...');
                 
+                // Inicia requisição HTTP POST assíncrona para o Servlet J2EE responsável pelo Login
                 $.ajax({
                     type: "POST",
                     url: "api/login",
@@ -109,6 +112,7 @@
                         var alertBox = $('#alertBox');
                         alertBox.removeClass('d-none alert-success alert-danger');
                         
+                        // Bloco executado quando o servidor responde. A sessão (HttpSession) já foi criada e populada no backend em caso de sucesso.
                         if (response.status === 'success') {
                             alertBox.addClass('alert-success').text(response.message);
                             setTimeout(function(){

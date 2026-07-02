@@ -1,5 +1,6 @@
 package util;
 
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,9 +11,11 @@ public class EmailSender {
     private static final String TOKEN = "aadb5e4d113cdd2345a8c5f0f9c5a133";
     private static final String ENDPOINT = "https://sandbox.api.mailtrap.io/api/send/4722708";
 
+    // Utilitário para enviar requisições HTTP POST formatadas em JSON nativamente pelo HttpClient do Java 11+
     private static boolean sendPost(String jsonBody) {
         try {
             HttpClient client = HttpClient.newHttpClient();
+            // Montagem da requisição com os cabeçalhos obrigatórios de Autorização (Bearer Token do Mailtrap) e tipo de conteúdo
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(ENDPOINT))
                     .header("Authorization", "Bearer " + TOKEN)
@@ -36,6 +39,7 @@ public class EmailSender {
         }
     }
 
+    // Método de negócio que formata o Payload JSON com a estrutura exigida pela API do Mailtrap (Boas-vindas/Validação)
     public static boolean enviarEmailValidacao(String destinatario, String nome) {
         String texto = "Olá " + nome + ",\\n\\nSeu cadastro foi realizado com sucesso!\\nPara validar sua conta acesse:\\nhttp://localhost:8080/project-main/validar?email=" + destinatario;
         

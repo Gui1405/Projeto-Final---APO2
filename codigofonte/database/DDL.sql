@@ -1,4 +1,5 @@
 -- Script de Criacao DDL
+
 DROP DATABASE IF EXISTS cinema;
 CREATE DATABASE IF NOT EXISTS cinema;
 USE cinema;
@@ -92,6 +93,7 @@ CREATE TABLE IF NOT EXISTS ingresso (
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS sp_ComprarIngresso $$
+-- PROCEDURE: Encapsula no motor do banco a lógica atômica de compra de ingresso e reserva da poltrona.
 CREATE PROCEDURE sp_ComprarIngresso(
     IN p_ClienteId INT,
     IN p_SessaoId INT,
@@ -103,9 +105,12 @@ BEGIN
     DECLARE v_DisponivelPoltrona BOOLEAN;
     DECLARE v_SalaId INT;
     DECLARE v_SalaDisponivel BOOLEAN;
+    -- Início da Transação: Garante o princípio ACID. Se houver falha, todas as alterações em todas as tabelas sofrem Rollback.
     START TRANSACTION;
     SELECT sala_id INTO v_SalaId FROM sessao WHERE id = p_SessaoId;
     SELECT disponivel INTO v_SalaDisponivel FROM sala WHERE id = v_SalaId;
+    -- Pessimistic Lock (FOR UPDATE): Trava a linha (Row-Level Lock) da poltrona específica sendo lida.
+    -- Se duas threads da aplicação tentarem ler a mesma poltrona simultaneamente, a segunda ficará em estado de espera (WAIT) até que a primeira efetue o COMMIT ou ROLLBACK. Impede a dupla-venda perfeitamente.
     SELECT disponivel INTO v_DisponivelPoltrona FROM poltrona WHERE id = p_PoltronaId FOR UPDATE;
     IF v_SalaDisponivel = 0 THEN
         ROLLBACK;
