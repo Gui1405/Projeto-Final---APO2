@@ -5,7 +5,7 @@
 ---
 
 ### 🎥 Apresentação do Projeto
-[![Apresentação do Projeto no YouTube](https://img.youtube.com/vi/dzQVLHT0zP4/0.jpg)](https://youtu.be/dzQVLHT0zP4)
+[![Apresentação do Projeto no YouTube](https://img.youtube.com/vi/S14fCuIDWoc/0.jpg)](https://youtu.be/S14fCuIDWoc)
 
 ---
 
